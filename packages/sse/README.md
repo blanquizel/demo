@@ -8,3 +8,10 @@ This demo is about the following points:
 
 - [x] Sever 
 - [ ] SSE Api
+
+
+### How to use
+
++ `pnpm install` install dependencies
++ `pnpm run dev` run server
++ open `http://127.0.0.1:3001/sse` to test feature
