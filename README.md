@@ -4,4 +4,4 @@ a package which contains some demos
 
 ### ROADMAP
 
-- [ ] SSE API 
+- [x] SSE API 
