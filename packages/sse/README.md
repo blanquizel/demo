@@ -15,3 +15,8 @@ This demo is about the following points:
 + `pnpm install` install dependencies
 + `pnpm run dev` run server
 + open `http://127.0.0.1:3001/sse` to test feature
+
+
+### REFERNCES
+
+[Server-Sent Events 教程（阮一峰）](https://www.ruanyifeng.com/blog/2017/05/server-sent_events.html)
