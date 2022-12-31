@@ -7,7 +7,8 @@ This demo is about the following points:
 ### ROADMAP
 
 - [x] Sever 
-- [ ] SSE Api
+- [x] SSE Api
+- [ ] use axios fetch sse api
 
 
 ### How to use
