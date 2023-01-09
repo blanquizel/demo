@@ -5,6 +5,14 @@ In documnet folder, record some technical documents I wrote down for future reca
 
 I record that hope can help me when i need to implement them.
 
-### ROADMAP
+## ROADMAP
 
-- [x] SSE API 
+#### Package
+
+- [x] sse 
+- [ ] cookie
+- [ ] jwt
+- [ ] oath2
+
+#### document
+- [ ] 登学
