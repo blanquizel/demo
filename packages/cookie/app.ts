@@ -69,7 +69,6 @@ app.get('/login', (req: Request, res: Response) => {
     res.cookie('mySession', item.session, { expires: new Date(Date.now() + EXPIRE), httpOnly: true })
 
     // keep cookie in state and define a timer for clean
-
     const timer = setTimeout(() => {
         cache.delete(item.session);
     }, EXPIRE);
