@@ -7,8 +7,7 @@ This demo is about the following points:
 ### ROADMAP
 
 - [x] Sever 
-- [x] SSE Api
-- [ ] use axios fetch sse api
+- [x] Simluate login in server
 
 
 ### How to use
@@ -20,5 +19,3 @@ This demo is about the following points:
 
 
 ### REFERNCES
-
-[Server-Sent Events 教程（阮一峰）](https://www.ruanyifeng.com/blog/2017/05/server-sent_events.html)
