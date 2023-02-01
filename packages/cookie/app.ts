@@ -87,4 +87,4 @@ app.get('/state', (req: Request, res: Response) => {
 
 app.listen(PORT, () => {
     console.log(`⚡️[server]: Server is running at https://localhost:${PORT}`);
-})
+});
