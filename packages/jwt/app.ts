@@ -45,14 +45,26 @@ const validToken = (token: string) => {
 
 }
 
-console.log(genToken(users[0]));
+// console.log(genToken(users[0]));
 
 app.get('/', (req: Request, res: Response) => {
     res.send('Express + TypeScript Server');
 })
 
 app.get('/login', (req: Request, res: Response) => {
+    const params = req.query;
+    const { name, pw } = params;
+    if (!name || !pw) {
+        return res.send('Missing Parameters');
+    }
+    const item = users.find(item => item.name === name && item.pw === pw);
+    if (!item) {
+        return res.send('Not find User or PW not right');
+    }
 
+    const token = genToken(item);
+
+    return res.send(`Your token is: ${token}`);
 })
 
 app.get('/state', (req: Request, res: Response) => {
