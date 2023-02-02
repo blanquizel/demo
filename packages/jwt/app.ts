@@ -1,5 +1,4 @@
 import express, { Express, Request, Response } from 'express';
-
 import { createHmac } from 'node:crypto';
 
 const app: Express = express();
@@ -42,7 +41,9 @@ const genToken = (user: User) => {
 
 
 const validToken = (token: string) => {
-
+    const [headerStr, payloadStr, signature] = token.split('.');
+    const _signature = genSignature(headerStr, payloadStr, SECRET_KEY);
+    return signature === _signature;
 }
 
 // console.log(genToken(users[0]));
@@ -52,8 +53,7 @@ app.get('/', (req: Request, res: Response) => {
 })
 
 app.get('/login', (req: Request, res: Response) => {
-    const params = req.query;
-    const { name, pw } = params;
+    const { name, pw } = req.query;
     if (!name || !pw) {
         return res.send('Missing Parameters');
     }
@@ -68,7 +68,15 @@ app.get('/login', (req: Request, res: Response) => {
 })
 
 app.get('/state', (req: Request, res: Response) => {
-
+    const { token } = req.query;
+    if (!token) {
+        return res.send('Not find token');
+    }
+    console.log(token);
+    if (validToken(token as string)) {
+        return res.send('User has ready Login');
+    }
+    return res.send('Not Login');
 })
 
 app.listen(PORT, () => {
