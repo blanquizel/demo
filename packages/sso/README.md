@@ -5,7 +5,7 @@ This demo is about the following points:
 + How to create a login system by cookie.
 
 ### ROADMAP
-
+- [x] Use monorepo to manage packages
 - [ ] Server1 on port 3001
 - [ ] Server2 on port 3002
 - [ ] Authorziation Server on port 3003
