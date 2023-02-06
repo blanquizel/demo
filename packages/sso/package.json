@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev:serv1": "pnpm -F server1 dev",
+    "dev:serv2": "pnpm -F server2 dev",
+    "dev:ac": "pnpm -F authorization dev"
   },
   "keywords": [],
   "author": "",
