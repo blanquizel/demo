@@ -3,6 +3,8 @@ import session from 'express-session';
 import cookieParser from 'cookie-parser';
 
 const app: Express = express();
+const PORT = 3001;
+
 app.use(cookieParser())
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
@@ -17,7 +19,6 @@ app.use(session({
     saveUninitialized: false,
 }));
 
-const PORT = 3001;
 
 type User = {
     name: string;
@@ -27,38 +28,55 @@ type User = {
 
 const users: User[] = [{ name: 'aaa', pw: '123', session: 'user1aaa' }, { name: 'bbb', pw: '456', session: 'user2bbb' }];
 
+
 app.get('/', (req: Request, res: Response) => {
+    return res.render('index');
+});
+
+app.get('/verify', (req: Request, res: Response) => {
     let session_DB: any = req.session;
     if (session_DB.username) {
-        return res.send('Has ready login');
+        return res.send('You\'re ready login');
     }
     res.send('Not Login');
 });
 
-app.get('/login', (req: Request, res: Response) => {
+app.post('/login', (req: Request, res: Response) => {
     // check cookie
     let session_DB: any = req.session;
     if (session_DB.username) {
-        return res.send('Has ready login');
+        return res.json({
+            code: 0,
+            msg: 'Has ready login'
+        });
     }
 
     // check user name and pw
-    const params = req.query;
+    const params = req.body;
     const { name, pw } = params;
     if (!name || !pw) {
-        return res.send('Missing Parameters');
+        return res.json({
+            code: 0,
+            msg: 'Missing Parameters'
+        });
     }
 
     // valid name and pw
     const item = users.find(item => item.name === name && item.pw === pw);
     if (!item) {
-        return res.send('Not find User or PW not right');
+        return res.json({
+            code: 0,
+            msg: 'Not find User or PW not right'
+        });
     }
 
     session_DB = req.session;
     session_DB.username = name;
 
-    return res.send('Login Success');
+    return res.send({
+        code: 0,
+        msg: 'Login Success'
+    });
 })
 
 app.get('/logout', (req: Request, res: Response) => {

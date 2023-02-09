@@ -1,0 +1,11 @@
+POST http://127.0.0.1:3001/login
+Content-Type: application/json
+
+{
+    "name": "aaa",
+    "pw": "123"
+}
+
+### 
+GET http://127.0.0.1:3001/verify
+Set-Cookie: COOKIE DEMO=s%3ASaN35DXQwbYGV--leQSr5NlilCFhzUB3.Y9DsVahLQOMl2R4VJ5WlaN1whQh0OrKiPspPYmRROtg; Path=/; Expires=Thu, 09 Feb 2023 14:12:37 GMT; HttpOnly
