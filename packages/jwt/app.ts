@@ -16,12 +16,6 @@ type User = {
     pw: string;
 }
 
-enum TokenVerifyEnum {
-    OK,
-    INVALID,
-    EXP
-}
-
 const users: User[] = [{ name: 'aaa', pw: '123' }, { name: 'bbb', pw: '456' }];
 
 const genHeader = (): string => {
@@ -53,16 +47,6 @@ const genToken = (user: User) => {
     return `${header}.${payload}.${signature}`;
 }
 
-
-const validToken = (token: string): TokenVerifyEnum => {
-    const [headerStr, payloadStr, signature] = token.split('.');
-    const _signature = genSignature(headerStr, payloadStr, SECRET_KEY);
-    if (signature !== _signature) {
-        return TokenVerifyEnum.INVALID;
-    }
-    return TokenVerifyEnum.OK;
-}
-
 app.get('/', (req: Request, res: Response) => {
     res.send('Express + TypeScript Server');
 })
@@ -90,14 +74,6 @@ app.post('/login', (req: Request, res: Response) => {
             token,
         })
     })
-
-    // const token = genToken(item);
-    // return res.json({
-    //     code: 0,
-    //     data: {
-    //         token
-    //     }
-    // })
 })
 
 app.get('/verify', (req: Request, res: Response) => {
@@ -119,27 +95,6 @@ app.get('/verify', (req: Request, res: Response) => {
             data: payload
         })
     })
-
-    // console.log(token);
-    // const result: TokenVerifyEnum = validToken(token as string);
-    // console.log(result);
-    // if (result === TokenVerifyEnum.INVALID) {
-    //     return res.json({
-    //         code: 1,
-    //         msg: 'Token is not pass verify'
-    //     });
-    // }
-    // if (result === TokenVerifyEnum.EXP) {
-    //     return res.json({
-    //         code: 1,
-    //         msg: 'Token is expired'
-    //     });
-    // }
-    // return res.json({
-    //     code: 0,
-    //     msg: ' You\'re ready Login',
-    //     data: JSON.parse(token.split('.')[1])
-    // })
 })
 
 app.listen(PORT, () => {
