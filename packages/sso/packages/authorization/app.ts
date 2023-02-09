@@ -1,11 +1,23 @@
 import express, { Express, Request, Response } from 'express';
+import path from 'node:path';
+import { createHash, createHmac } from 'node:crypto';
+import swig from 'swig';
 import cookieParser from 'cookie-parser';
-import { createHash } from 'node:crypto';
+import session from 'express-session';
 
 const app: Express = express();
-app.use(cookieParser())
+
+// app.use(bodyParser);
+app.use(cookieParser());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.set('views', path.join(__dirname, '../'));
+app.engine('html', swig.renderFile);
+app.set('view engine', 'html');
 
 const PORT = 3003;
+const SECRET_KEY = 'secret_key';
 
 type User = {
     name: string;
@@ -15,16 +27,17 @@ type User = {
 
 const EXPIRE: number = 1000 * 60 * 5;
 
-const users: User[] = [{ name: 'aaa', pw: '123', session: 'user1aaa' }, { name: 'bbb', pw: '456', session: 'user2bbb' }];
+const users: User[] = [{ name: 'test', pw: '123', session: 'user1aaa' }];
 
-const cookieMap = new Map();
+app.use(session({
+    secret: 'secret key',
+    name: 'SSO DEMO',
+    cookie: { maxAge: EXPIRE },
+    resave: false,
+    saveUninitialized: false
+}));
+
 const ticketMap = new Map();
-
-const createTicket = (code: string): string => {
-    const data: string = code + new Date().getTime();
-    const hash = createHash('sha256');
-    return hash.update(data).digest('base64url');
-}
 
 const createCode = (length: number) => {
     let result = '';
@@ -38,57 +51,101 @@ const createCode = (length: number) => {
     return result;
 }
 
-const validTicket = (code: string, ticket: string): boolean => {
-    return false;
+const createTicket = (code: string, from: string): string => {
+    const time = new Date().getTime();
+
+    const header = Buffer.from(JSON.stringify({
+        "alg": "HS256",
+        "typ": "JWT"
+    })).toString('base64url');
+    const payload = Buffer.from(JSON.stringify({
+        "sub": "jwt-test",
+        "code": code,
+        "iat": time,
+        "exp": time + EXPIRE,
+    })).toString('base64url');
+    const signature = createHmac('sha256', SECRET_KEY).update(header + '.' + payload)
+        .digest('base64url');
+
+    return `${header}.${payload}.${signature}`;
 }
 
-const validCookie = (cookies: any): boolean => {
-    console.log('cookie:', cookies);
-    console.log('cache:', cookieMap);
-    // warning, [Object: null prototype]
-    if (cookies && JSON.stringify(cookies) !== '{}' && cookies.hasOwnProperty('mySession')) {
-        if (cookieMap.has(cookies['mySession'])) {
-            const time = new Date().getTime();
-            if (cookieMap.get(cookies['mySession'])! > time) {
-                cookieMap.delete(cookies['mySession']);
-                return false;
-            }
-            return true;
-        }
+const validTicket = (ticket: string): boolean => {
+    const [headerStr, payloadStr, signature] = ticket.split('.');
+    const _signature = createHmac('sha256', SECRET_KEY).update(headerStr + '.' + payloadStr)
+        .digest('base64url');
+    if (signature !== _signature) {
+        return false;
+    };
+    const { exp } = JSON.parse(Buffer.from(payloadStr, 'base64url').toString('utf-8'));
+    if (exp < new Date().getTime()) {
+        return false;
     }
-    return false;
+
+    return true;
 }
 
 app.get('/', (req: Request, res: Response) => {
-    res.send('Express + TypeScript Server');
-})
-
-app.get('/code', (req: Request, res: Response) => {
-    res.send('Express + TypeScript Server');
+    res.render('index');
 })
 
 app.get('/ticket', (req: Request, res: Response) => {
-    res.send('Express + TypeScript Server');
+    const { code, from } = req.params;
+    const ticket = createTicket(code, from);
+    return res.json({
+        code: 0,
+        msg: '',
+        data: {
+            ticket
+        }
+    })
 })
 
 app.get('/login', (req: Request, res: Response) => {
-    const cookies = req.cookies;
-    const params = req.query;
-    if (validCookie(cookies)) {
-        const returnUrl = params['return'];
-        const code = createCode(4);
-        return res.send('')
-    } else {
+    res.render('index');
+})
 
+app.post('/login', (req: Request, res: Response) => {
+    let session_DB: any = req.session;
+    const code = createCode(4);
+    if (session_DB.username) {
+        return res.json({
+            code: 0,
+            status: 1,
+            data: code,
+        });
+    }
+    // console.log(req.session);
+    console.log(req.body, req.params);
+    const { name, pw } = req.body;
+    const item = users.find(item => item.name === name && item.pw === pw);
+    if (!item) {
+        return res.json({
+            code: 0,
+            status: 2,
+            msg: 'lost required params'
+        });
     }
 
-    res.send('Express + TypeScript Server');
+    session_DB = req.session;
+    session_DB.username = name;
+
+    return res.json({
+        code: 0,
+        status: 0,
+        data: code,
+        msg: 'login success'
+    });
 })
 
 app.get('/release', (req: Request, res: Response) => {
-    cookieMap.clear();
     ticketMap.clear();
+    res.json({
+        code: 0,
+        status: 0
+    })
 })
+
 app.listen(PORT, () => {
     console.log(`⚡️[server]: Server is running at https://localhost:${PORT}`);
 })

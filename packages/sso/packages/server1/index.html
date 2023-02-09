@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link ref="shortcut icon" ref="#">
+    <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+
+        const App = () => {
+            const onClick = () => {
+                fetch("/login?name=test&pw=123")
+                    .then((response) => response.json())
+                    .then((data) => { 
+                        console.log(data) 
+                        if(data.code === 0 && data.status === 1){
+                            window.location.href = data.url;
+                        }
+                    });
+            }
+            return (
+                <div>
+                    <div>{new Date().getTime()}</div>
+                    <button onClick={onClick}>login</button>
+                </div>)
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>

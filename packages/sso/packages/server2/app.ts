@@ -1,9 +1,15 @@
 import express, { Express, Request, Response } from 'express';
-import * as axios from 'axios';
+import axios from 'axios';
+import path from 'node:path';
+import swig from 'swig';
 import cookieParser from 'cookie-parser';
 
 const app: Express = express();
 app.use(cookieParser());
+
+app.set('views', path.join(__dirname, '../'));
+app.engine('html', swig.renderFile);
+app.set('view engine', 'html');
 
 const PORT = 3002;
 

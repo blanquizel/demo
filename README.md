@@ -16,7 +16,6 @@ I record that hope can help me when i need to implement them.
 ## ROADMAP
 #### Package
 - [ ] sso
-- [ ] oath2
 - [ ] short url
 
 #### document

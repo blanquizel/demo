@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link ref="shortcut icon" ref="#">
+    <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+
+        const App = () => {
+            const onClick = () => {
+                fetch('/login', {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    method: 'post', 
+                    body: JSON.stringify({
+                        name: 'test',
+                        pw: '123',
+                    })
+                }).then((response) => response.json())
+                    .then((data) => {
+                        // console.log(data);
+                        if (data.status === 0) {
+                            const code = data.data;
+                            const querys = window.location.search.slice(1).split('&').map(item => item.split('='));
+                            // console.log(querys);
+                            const url = decodeURIComponent(`${querys[0][1]}?code=${code}`);
+                            console.log(url);
+                            window.location.href = url;
+                        }
+                    });
+            }
+            return (
+                <div>
+                    <div>{new Date().getTime()}</div>
+                    <button onClick={onClick}>login</button>
+                </div>)
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>

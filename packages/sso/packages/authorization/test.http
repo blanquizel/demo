@@ -1,0 +1,17 @@
+@contentType: application/json
+@accept: application/json
+
+###
+POST http://127.0.0.1:3003/login HTTP/1.1
+Content-Type: {{$contentType}}
+Accept: {{$accept}}
+
+{
+    "name":"test",
+    "pw":"123"
+}
+
+###
+GET http://localhost:3003/ticket
+?code=aaa
+&from=A

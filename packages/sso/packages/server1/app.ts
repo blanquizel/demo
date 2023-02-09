@@ -1,28 +1,25 @@
 import express, { Express, Request, Response } from 'express';
 import axios from 'axios';
+import path from 'node:path';
+import swig from 'swig';
 import cookieParser from 'cookie-parser';
+import { send } from 'node:process';
 
 const app: Express = express();
 app.use(cookieParser());
 
+app.set('views', path.join(__dirname, '../'));
+app.engine('html', swig.renderFile);
+app.set('view engine', 'html');
+
 const PORT = 3001;
-
-const EXPIRE: number = 1000 * 60 * 5;
 const TICKET_KEY = 'ticket';
+const CODE_KEYY = 'code';
 
-const cache = new Map();
 
 const validTicket = (cookies: any) => {
     if (cookies && JSON.stringify(cookies) !== '{}' && cookies.hasOwnProperty(TICKET_KEY)) {
         const ticket = cookies[TICKET_KEY];
-        if (cache.has(ticket)) {
-            const time = new Date().getTime();
-            if (cache.get(cookies[TICKET_KEY])! > time) {
-                cache.delete(cookies[TICKET_KEY]);
-                return false;
-            }
-            return true;
-        }
     }
     return false;
 }
@@ -34,7 +31,19 @@ const getTicket = async (code: string) => {
 }
 
 app.get('/', (req: Request, res: Response) => {
-    res.send('Express + TypeScript Server');
+    // res.send('Express + TypeScript Server');
+    const params = req.query;
+    const cookies = req.cookies;
+    if (validTicket(cookies)) {
+        return res.send('User has ready Login');
+    }
+    if (params[CODE_KEYY]) {
+        const ticket = getTicket(params[CODE_KEYY] as string);
+        return res.send('check code');
+    }
+
+    const returnUrl = encodeURIComponent('http://127.0.0.1:3001/');
+    return res.redirect(`http://127.0.0.1:3003/login?return=${returnUrl}`);
 })
 
 app.get('/login', (req: Request, res: Response) => {
@@ -43,13 +52,35 @@ app.get('/login', (req: Request, res: Response) => {
 
     // valid ticket
     if (validTicket(cookies)) {
-        return res.send('User has ready Login');
-    }
-    if (params['code']) {
-        // return res.redirect()
+        return res.send({
+            code: 0,
+            staute: 0
+        })
     }
 
-    return res.send('Login failure');
+    // 
+    if (params['code']) {
+        // return res.redirect()
+
+        return res.send('Login Success');
+    }
+    // if (params['name'] && params['pw']) {
+    //     const returnUrl = req.host + req.originalUrl;
+    //     return res.send({
+    //         code: 0,
+    //         status: 1,
+    //         url: `http://127.0.0.1:3003/login?name=${params['name']}&pw=${params['pw']}&return=${returnUrl}`
+    //     });
+    // }
+
+    return res.send({
+        code: -1,
+    })
+})
+
+app.get('/ticket', (req: Request, res: Response) => {
+    const params = req.query;
+
 })
 
 app.get('/state', (req: Request, res: Response) => {
@@ -57,9 +88,13 @@ app.get('/state', (req: Request, res: Response) => {
     if (validTicket(cookies)) {
         return res.send('User has ready Login');
     }
-    const cur = req.originalUrl;
     return res.send('Not Login');
 });
+
+app.get('/logout', (req: Request, res: Response) => {
+    const cookies = req.cookies;
+    res.redirect('/state');
+})
 
 app.listen(PORT, () => {
     console.log(`⚡️[server]: Server is running at https://localhost:${PORT}`);
