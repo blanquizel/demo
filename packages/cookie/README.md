@@ -8,16 +8,14 @@ This demo is about the following points:
 
 - [x] Sever 
 - [x] Login Api
-- [x] Login Info Cache
-- [x] check current state
+- [x] Verify Api
+- [x] Test
 
 ### How to use
 
 + `pnpm install` install dependencies
 + `pnpm run dev` run server
-+ visit `http://127.0.0.1:3001/` to test server is running
-+ open `http://127.0.0.1:3001/login` to login
-+ open `http://127.0.0.1:3001/state` to check state
++ Use test.http file by Rest Client for test
 
 
 ### REFERNCES
