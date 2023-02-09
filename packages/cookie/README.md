@@ -13,8 +13,8 @@ This demo is about the following points:
 
 ### How to use
 
-+ `pnpm install` install dependencies
-+ `pnpm run dev` run server
++ Run `pnpm install` install dependencies
++ Run `pnpm run dev` to start server, visit `http://127.0.0.1:3001` to check server status
 + Use test.http file by Rest Client for test
 
 

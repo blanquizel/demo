@@ -75,7 +75,8 @@ app.post('/login', (req: Request, res: Response) => {
 
     return res.send({
         code: 0,
-        msg: 'Login Success'
+        msg: 'Login Success',
+        session: session_DB
     });
 })
 
