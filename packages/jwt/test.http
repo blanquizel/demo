@@ -1,0 +1,13 @@
+POST http://127.0.0.1:3001/login
+Content-Type: application/json
+
+{
+    "name": "aaa",
+    "pw": "123"
+}
+
+###
+GET http://127.0.0.1:3001/verify
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiYWFhIiwiaWF0IjoxNjc1OTQ1NjY3LCJleHAiOjE2NzU5NDU2OTd9.1bZwGvsqQMdG51dpjn7c3h_Vpj0mkgbMIlRk_456JdE
+
+
