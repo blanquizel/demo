@@ -33,14 +33,6 @@ app.get('/', (req: Request, res: Response) => {
     return res.render('index');
 });
 
-app.get('/verify', (req: Request, res: Response) => {
-    let session_DB: any = req.session;
-    if (session_DB.username) {
-        return res.send('You\'re ready login');
-    }
-    res.send('Not Login');
-});
-
 app.post('/login', (req: Request, res: Response) => {
     // check cookie
     let session_DB: any = req.session;
@@ -79,6 +71,14 @@ app.post('/login', (req: Request, res: Response) => {
         session: session_DB
     });
 })
+
+app.get('/verify', (req: Request, res: Response) => {
+    let session_DB: any = req.session;
+    if (session_DB.username) {
+        return res.send('You\'re ready login');
+    }
+    res.send('Not Login');
+});
 
 app.get('/logout', (req: Request, res: Response) => {
     req.session.destroy( () => {});

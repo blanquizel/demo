@@ -2,12 +2,13 @@ import express, { Express, Request, Response } from 'express';
 import path from 'node:path';
 import { createHash, createHmac } from 'node:crypto';
 import swig from 'swig';
-import cookieParser from 'cookie-parser';
 import session from 'express-session';
+import cookieParser from 'cookie-parser';
+import jwt from 'jsonwebtoken';
 
 const app: Express = express();
+const PORT = 3003;
 
-// app.use(bodyParser);
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -16,7 +17,6 @@ app.set('views', path.join(__dirname, '../'));
 app.engine('html', swig.renderFile);
 app.set('view engine', 'html');
 
-const PORT = 3003;
 const SECRET_KEY = 'secret_key';
 
 type User = {
@@ -25,19 +25,18 @@ type User = {
     session: string;
 }
 
-const EXPIRE: number = 1000 * 60 * 5;
+const EXPIRE_COOKIE: number = 1000 * 60 * 5; // ms
+const EXPIRE_TICKET: number = 30; // s
 
 const users: User[] = [{ name: 'test', pw: '123', session: 'user1aaa' }];
 
 app.use(session({
     secret: 'secret key',
     name: 'SSO DEMO',
-    cookie: { maxAge: EXPIRE },
+    cookie: { maxAge: EXPIRE_COOKIE },
     resave: false,
     saveUninitialized: false
 }));
-
-const ticketMap = new Map();
 
 const createCode = (length: number) => {
     let result = '';
@@ -51,54 +50,8 @@ const createCode = (length: number) => {
     return result;
 }
 
-const createTicket = (code: string, from: string): string => {
-    const time = new Date().getTime();
-
-    const header = Buffer.from(JSON.stringify({
-        "alg": "HS256",
-        "typ": "JWT"
-    })).toString('base64url');
-    const payload = Buffer.from(JSON.stringify({
-        "sub": "jwt-test",
-        "code": code,
-        "iat": time,
-        "exp": time + EXPIRE,
-    })).toString('base64url');
-    const signature = createHmac('sha256', SECRET_KEY).update(header + '.' + payload)
-        .digest('base64url');
-
-    return `${header}.${payload}.${signature}`;
-}
-
-const validTicket = (ticket: string): boolean => {
-    const [headerStr, payloadStr, signature] = ticket.split('.');
-    const _signature = createHmac('sha256', SECRET_KEY).update(headerStr + '.' + payloadStr)
-        .digest('base64url');
-    if (signature !== _signature) {
-        return false;
-    };
-    const { exp } = JSON.parse(Buffer.from(payloadStr, 'base64url').toString('utf-8'));
-    if (exp < new Date().getTime()) {
-        return false;
-    }
-
-    return true;
-}
-
 app.get('/', (req: Request, res: Response) => {
     res.render('index');
-})
-
-app.get('/ticket', (req: Request, res: Response) => {
-    const { code, from } = req.params;
-    const ticket = createTicket(code, from);
-    return res.json({
-        code: 0,
-        msg: '',
-        data: {
-            ticket
-        }
-    })
 })
 
 app.get('/login', (req: Request, res: Response) => {
@@ -138,11 +91,57 @@ app.post('/login', (req: Request, res: Response) => {
     });
 })
 
-app.get('/release', (req: Request, res: Response) => {
-    ticketMap.clear();
-    res.json({
-        code: 0,
-        status: 0
+app.get('/verify', (req: Request, res: Response) => {
+    let session_DB: any = req.session;
+    if (session_DB.username) {
+        return res.json({
+            code: 0,
+            msg: 'You\'re ready login'
+        });
+    }
+    return res.send({
+        code: 1,
+        msg: 'Not Login'
+    });
+});
+
+
+app.post('/ticket', (req: Request, res: Response) => {
+    const { code, source } = req.body;
+    return jwt.sign({ code, source }, SECRET_KEY, { expiresIn: `${EXPIRE_TICKET}s` }, (err, ticket) => {
+        return res.json({
+            code: 0,
+            ticket
+        })
+    });
+})
+
+app.get('/verifyTicket', (req: Request, res: Response) => {
+    const header = req.headers;
+    const ticket = header['authorization']?.split(' ')[1];
+    if (!ticket) {
+        return res.json({
+            code: 1,
+            msg: 'Not find ticket'
+        });
+    }
+
+    const { source } = req.query;
+    console.log(req.query);
+
+    return jwt.verify(ticket, SECRET_KEY, (err, payload: any) => {
+        if (err) res.sendStatus(403);
+        // console.log(payload);
+        if (  payload.source !== source) {
+            return res.json({
+                code: 1,
+                msg: 'err source'
+            })
+        }
+        return res.json({
+            code: 0,
+            data: payload
+        })
     })
 })
 

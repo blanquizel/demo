@@ -11,7 +11,6 @@ I record that hope can help me when i need to implement them.
 - [x] jwt
 
 #### document
-- [ ] 登学
 
 ## ROADMAP
 #### Package
@@ -19,3 +18,4 @@ I record that hope can help me when i need to implement them.
 - [ ] short url
 
 #### document
+- [ ] 登学

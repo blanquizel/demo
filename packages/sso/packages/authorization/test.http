@@ -1,17 +1,30 @@
-@contentType: application/json
-@accept: application/json
-
-###
+###  Cookie登陆
 POST http://127.0.0.1:3003/login HTTP/1.1
-Content-Type: {{$contentType}}
-Accept: {{$accept}}
+Content-Type: application/json
 
 {
     "name":"test",
     "pw":"123"
 }
 
+### 校验Cookie登陆
+GET http://127.0.0.1:3003/verify HTTP/1.1
+Set-Cookie: SSO DEMO=s%3ArtQ1hS9b_kO_8shVEv23ezi629Pp8UxO.3nLGTYQiS1CSvODloDyV8rCl3LjyyzvTnl7pXZ7JDYo; Path=/; Expires=Fri, 10 Feb 2023 11:56:59 GMT; HttpOnly
+
+
+### Ticket发行
+POST http://localhost:3003/ticket HTTP/1.1
+Content-Type: application/json
+
+{
+    "code": "aaa",
+    "source": "A"
+}
+
+### 校验Ticket
+GET http://localhost:3003/verifyTicket?source=A HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2RlIjoiYWFhIiwic291cmNlIjoiQSIsImlhdCI6MTY3NjAzNjUyNywiZXhwIjoxNjc2MDM2NTU3fQ.K1AJ2vgui3Rx8wzKE3yEIE_VsENPJlCgC3ICV8MFD_s
+
+
+
 ###
-GET http://localhost:3003/ticket
-?code=aaa
-&from=A

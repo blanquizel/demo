@@ -8,6 +8,5 @@ Content-Type: application/json
 
 ###
 GET http://127.0.0.1:3001/verify
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiYWFhIiwiaWF0IjoxNjc1OTQ1NjY3LCJleHAiOjE2NzU5NDU2OTd9.1bZwGvsqQMdG51dpjn7c3h_Vpj0mkgbMIlRk_456JdE
-
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiYWFhIiwiaWF0IjoxNjc2MDMzNDQ5LCJleHAiOjE2NzYwMzM0Nzl9.woFwliae3rp_funujVbUt-JziPPVwaSojTAo8PauVhA
 
