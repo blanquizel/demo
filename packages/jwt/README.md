@@ -21,3 +21,4 @@ This demo is about the following points:
 ### REFERNCES
 
 [JWT.IO](https://jwt.io)
+[jsonwebtoken](https://github.com/auth0/node-jsonwebtoken)
