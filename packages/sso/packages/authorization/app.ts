@@ -4,12 +4,14 @@ import { createHash, createHmac } from 'node:crypto';
 import swig from 'swig';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
 import jwt from 'jsonwebtoken';
 
 const app: Express = express();
 const PORT = 3003;
 
 app.use(cookieParser());
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -26,9 +28,12 @@ type User = {
 }
 
 const EXPIRE_COOKIE: number = 1000 * 60 * 5; // ms
-const EXPIRE_TICKET: number = 30; // s
+const EXPIRE_TICKET: number = 60 * 5; // s
 
 const users: User[] = [{ name: 'test', pw: '123', session: 'user1aaa' }];
+
+const codeRecord: Set<string> = new Set();
+const codeGarbage: Set<string> = new Set();
 
 app.use(session({
     secret: 'secret key',
@@ -38,7 +43,7 @@ app.use(session({
     saveUninitialized: false
 }));
 
-const createCode = (length: number) => {
+const _createCode = (length: number) => {
     let result = '';
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     const charactersLength = characters.length;
@@ -48,6 +53,14 @@ const createCode = (length: number) => {
         counter += 1;
     }
     return result;
+}
+
+const createCode = ( length: number) => {
+    let code = _createCode(length);
+    while(codeRecord.has(code) || codeGarbage.has(code)){
+        code = _createCode(length);
+    }
+    return code;
 }
 
 app.get('/', (req: Request, res: Response) => {
@@ -62,6 +75,7 @@ app.post('/login', (req: Request, res: Response) => {
     let session_DB: any = req.session;
     const code = createCode(4);
     if (session_DB.username) {
+        codeRecord.add(code);
         return res.json({
             code: 0,
             status: 1,
@@ -74,7 +88,7 @@ app.post('/login', (req: Request, res: Response) => {
     const item = users.find(item => item.name === name && item.pw === pw);
     if (!item) {
         return res.json({
-            code: 0,
+            code: 1,
             status: 2,
             msg: 'lost required params'
         });
@@ -83,6 +97,7 @@ app.post('/login', (req: Request, res: Response) => {
     session_DB = req.session;
     session_DB.username = name;
 
+    codeRecord.add(code);
     return res.json({
         code: 0,
         status: 0,
@@ -105,10 +120,27 @@ app.get('/verify', (req: Request, res: Response) => {
     });
 });
 
-
 app.post('/ticket', (req: Request, res: Response) => {
     const { code, source } = req.body;
+
+    if(!codeRecord.has(code)){
+        return res.json({
+            code: 1,
+            msg: 'code invalied'
+        })
+    }
+    if(codeGarbage.has(code)){
+        return res.json({
+            code: 1,
+            msg: 'code had used'
+        })
+    }
+
     return jwt.sign({ code, source }, SECRET_KEY, { expiresIn: `${EXPIRE_TICKET}s` }, (err, ticket) => {
+        console.log('code: ', code);
+        console.log('ticket: ', ticket);
+        codeRecord.delete(code);
+        codeGarbage.add(code);
         return res.json({
             code: 0,
             ticket
@@ -127,12 +159,18 @@ app.get('/verifyTicket', (req: Request, res: Response) => {
     }
 
     const { source } = req.query;
-    console.log(req.query);
+    // console.log(req.query);
 
     return jwt.verify(ticket, SECRET_KEY, (err, payload: any) => {
-        if (err) res.sendStatus(403);
+        if (err) {
+            // return res.sendStatus(403);
+            return res.json({
+                code: 1,
+                msg: 'ticket verify falied'
+            })
+        }
         // console.log(payload);
-        if (  payload.source !== source) {
+        if (payload.source !== source) {
             return res.json({
                 code: 1,
                 msg: 'err source'
@@ -143,6 +181,13 @@ app.get('/verifyTicket', (req: Request, res: Response) => {
             data: payload
         })
     })
+})
+
+app.get('/checkCode', (req: Request, res: Response) => {
+    return res.json({
+        record: Array.from(codeRecord),
+        garbage: Array.from(codeGarbage),
+    });
 })
 
 app.listen(PORT, () => {

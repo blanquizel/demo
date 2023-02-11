@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link ref="shortcut icon" ref="#">
-    <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react@latest/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@latest/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 
@@ -15,26 +15,41 @@
     <script type="text/babel">
 
         const App = () => {
+            const [cookie, setCookie] = React.useState('');
+            const [msg, setMsg] = React.useState('');
+
             const onClick = () => {
                 fetch('/login', {
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    method: 'post', 
+                    method: 'post',
                     body: JSON.stringify({
                         name: 'test',
                         pw: '123',
                     })
-                }).then((response) => response.json())
+                }).then((response) => {
+                    setCookie(response.headers.cookie);
+                    return response.json();
+                })
                     .then((data) => {
+                        // console.log('----------');
                         // console.log(data);
-                        if (data.status === 0) {
+                        if (data.code === 0) {
                             const code = data.data;
                             const querys = window.location.search.slice(1).split('&').map(item => item.split('='));
                             // console.log(querys);
-                            const url = decodeURIComponent(`${querys[0][1]}?code=${code}`);
-                            console.log(url);
+                            let url = '';
+                            querys.map(([key, value]) => {
+                                if (key === 'return') {
+                                    url = decodeURIComponent(value);
+                                }
+                            })
+                            url += `?code=${code}`;
+                            console.log('url: ', url);
                             window.location.href = url;
+                        } else {
+                            setMsg(data.msg);
                         }
                     });
             }
@@ -42,6 +57,8 @@
                 <div>
                     <div>{new Date().getTime()}</div>
                     <button onClick={onClick}>login</button>
+                    <div>{{ msg }}</div>
+                    <div>{{ cookie }}</div>
                 </div>)
         }
 

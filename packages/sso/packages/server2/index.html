@@ -1,12 +1,68 @@
 <!DOCTYPE html>
-<html>
-<script type="text/javascript">
-    const click = () => {
+<html lang="en">
 
-    }
-</script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link ref="shortcut icon" ref="#">
+    <script crossorigin src="https://unpkg.com/react@latest/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@latest/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
 
-<body><button onClick="click">login</button>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+
+        const App = () => {
+            const [login, setLogin] = React.useState(false);
+            const [ticket, setTicket] = React.useState('');
+            React.useEffect(() => {
+                let url = '/login';
+                const params = window.location.search.slice(1).split('&').map(item => item.split('='));
+                params.forEach(([key, value]) => {
+                    if (key === 'code') {
+                        url += `?code=${value}`;
+                    }
+                })
+                fetch(url, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${window.localStorage.getItem('ticket')}`
+                    },
+                    method: 'get',
+                    redirect: 'follow'
+                }).then((response) => {
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                        return Promise.reject();
+                    }
+                    return response.json();
+                })
+                    .then(res => {
+                        // console.log(res);
+                        if (res.code === 0) {
+                            if (res['ticket']) {
+                                window.localStorage.setItem('ticket', res.ticket);
+                                // console.log(res.ticket);
+                            }
+                            setLogin(true);
+                            setTicket(`Bearer ${window.localStorage.getItem('ticket')}`);
+                        }
+                    })
+            }, [])
+
+            return (
+                <div>
+                    <div>Welecome</div>
+                    {login && <div>You're ready login</div>}
+                    <div>{ticket}</div>
+                </div>)
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
 </body>
 
 </html>

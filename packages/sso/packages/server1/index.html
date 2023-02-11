@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link ref="shortcut icon" ref="#">
-    <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react@latest/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@latest/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 
@@ -15,20 +15,48 @@
     <script type="text/babel">
 
         const App = () => {
-            const onClick = () => {
-                fetch("/login?name=test&pw=123")
-                    .then((response) => response.json())
-                    .then((data) => { 
-                        console.log(data) 
-                        if(data.code === 0 && data.status === 1){
-                            window.location.href = data.url;
+            const [login, setLogin] = React.useState(false);
+            const [ticket, setTicket] = React.useState('');
+            React.useEffect(() => {
+                let url = '/login';
+                const params = window.location.search.slice(1).split('&').map(item => item.split('='));
+                params.forEach(([key, value]) => {
+                    if (key === 'code') {
+                        url += `?code=${value}`;
+                    }
+                })
+                fetch(url, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${window.localStorage.getItem('ticket')}`
+                    },
+                    method: 'get',
+                    redirect: 'follow'
+                }).then((response) => {
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                        return Promise.reject();
+                    }
+                    return response.json();
+                })
+                    .then(res => {
+                        // console.log(res);
+                        if (res.code === 0) {
+                            if (res['ticket']) {
+                                window.localStorage.setItem('ticket', res.ticket);
+                                // console.log(res.ticket);
+                            }
+                            setLogin(true);
+                            setTicket(`Bearer ${window.localStorage.getItem('ticket')}`);
                         }
-                    });
-            }
+                    })
+            }, [])
+
             return (
                 <div>
-                    <div>{new Date().getTime()}</div>
-                    <button onClick={onClick}>login</button>
+                    <div>Welecome</div>
+                    {login && <div>You're ready login</div>}
+                    <div>{ticket}</div>
                 </div>)
         }
 
