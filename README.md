@@ -6,7 +6,7 @@ I record that hope can help me when i need to implement them.
 
 ## LIST
 #### Package
-- [x] sse 
+- [x] sse
 - [x] cookie
 - [x] jwt
 - [x] sso
@@ -15,6 +15,7 @@ I record that hope can help me when i need to implement them.
 
 ## ROADMAP
 #### Package
+- [ ] refresh token
 - [ ] short url
 
 #### document
