@@ -16,11 +16,10 @@ This demo is about the following points:
 
 ### How to use
 
-+ `pnpm install` install dependencies
-+ `pnpm run dev` run server
-+ visit `http://127.0.0.1:3001/` to test server1 is running
-+ visit `http://127.0.0.1:3002/` to test server2 is running
-+ visit `http://127.0.0.1:3003/` to test authorziation server is running
++ `pnpm install` install dependencies.
++ By `pnpm run dev` script, startup all server.
++ visit `http://127.0.0.1:3001/` to login for serv1.
++ visit `http://127.0.0.1:3002/` to login for serv2. It should be noted that, if you had loged in serv1, there will not need to click login button in Authorziation Center.
 
 
 ### REFERNCES
