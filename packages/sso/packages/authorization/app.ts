@@ -55,9 +55,9 @@ const _createCode = (length: number) => {
     return result;
 }
 
-const createCode = ( length: number) => {
+const createCode = (length: number) => {
     let code = _createCode(length);
-    while(codeRecord.has(code) || codeGarbage.has(code)){
+    while (codeRecord.has(code) || codeGarbage.has(code)) {
         code = _createCode(length);
     }
     return code;
@@ -68,6 +68,17 @@ app.get('/', (req: Request, res: Response) => {
 })
 
 app.get('/login', (req: Request, res: Response) => {
+    let session_DB: any = req.session;
+    if (session_DB.username) {
+        const code = createCode(4);
+        const params = req.query;
+        let url = '/';
+        if(params['return']){
+            url = decodeURIComponent(params['return'] as string) + `?code=${code}`;
+            codeRecord.add(code);
+        }
+        return res.redirect(301, url);
+    }
     res.render('index');
 })
 
@@ -123,13 +134,13 @@ app.get('/verify', (req: Request, res: Response) => {
 app.post('/ticket', (req: Request, res: Response) => {
     const { code, source } = req.body;
 
-    if(!codeRecord.has(code)){
+    if (!codeRecord.has(code)) {
         return res.json({
             code: 1,
             msg: 'code invalied'
         })
     }
-    if(codeGarbage.has(code)){
+    if (codeGarbage.has(code)) {
         return res.json({
             code: 1,
             msg: 'code had used'

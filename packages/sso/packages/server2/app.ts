@@ -68,7 +68,7 @@ app.get('/login', async (req: Request, res: Response) => {
 
     if (result.code !== 0) {
         console.log('ticket verify failed');
-        const returnUrl = encodeURIComponent('http://127.0.0.1:3001/');
+        const returnUrl = encodeURIComponent('http://127.0.0.1:3002/');
         const { code } = req.query;
         if (code) {
             // has code, server visit authorization center api for ticket
