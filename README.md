@@ -9,12 +9,12 @@ I record that hope can help me when i need to implement them.
 - [x] sse 
 - [x] cookie
 - [x] jwt
+- [x] sso
 
 #### document
 
 ## ROADMAP
 #### Package
-- [ ] sso
 - [ ] short url
 
 #### document
