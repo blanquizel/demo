@@ -16,7 +16,10 @@ I record that hope can help me when i need to implement them.
 ## ROADMAP
 #### Package
 - [ ] refresh token
-- [ ] short url
+- [ ] tiny url
 
 #### document
 - [ ] 登学
+- [ ] new运算符
+- [ ] 浏览器缓存
+- [ ] JS中的继承
