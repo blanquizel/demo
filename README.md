@@ -12,6 +12,7 @@ I record that hope can help me when i need to implement them.
 - [x] sso
 
 #### document
+- [x] new运算符
 
 ## ROADMAP
 #### Package
@@ -20,6 +21,6 @@ I record that hope can help me when i need to implement them.
 
 #### document
 - [ ] 登学
-- [ ] new运算符
 - [ ] 浏览器缓存
 - [ ] JS中的继承
+- [ ] JS类型判断
