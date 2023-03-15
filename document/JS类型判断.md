@@ -29,14 +29,15 @@ typeof Array     // function
 typeof Symbol()  // symbol
 
 Object instanceof Object     // true
-Object instanceof Array      // true
+Object instanceof Array      // false
 Object instanceof Function   // true
 Array instanceof Object      // true
-Array instanceof Array       // true
+Array instanceof Array       // false
 Array instanceof Function    // true
 Function instanceof Object   // true
-Function instanceof Array    // true
+Function instanceof Array    // false
 Function instanceof Function // true
+String instanceof String     // false
 
 Date instanceof Date // true
 Date instanceof Object // true
@@ -69,6 +70,8 @@ const myType = (target) => {
     return type;
 }
 ```
+
+但是，你可以注意到，和其它三种方法不同，`instanceof`的表现和很多人直感预期的完全不同。这是因为`instanceof`是基于原型链来进行判断的，通常用于判断一个对象是否是另一个对象的实例对象。也因此，对于单纯的数据类型比较，它的表现和我们期望的会有很大的不同，具体可以参见原型链一文。
 
 备注：
 *1 `Null`类型较为特殊，由于JS使用变量机器码低位的1-3位来存储类型信息，而`Null`类型低位1-3位解析为'000'，和`Object`的类型表示一致，因此`typeof`方法无法区分`Null`和`Object`。通常建议直接使用`===`来做单独的分枝判断处理。
