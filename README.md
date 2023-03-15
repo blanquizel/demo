@@ -13,6 +13,7 @@ I record that hope can help me when i need to implement them.
 
 #### document
 - [x] new运算符
+- [x] JS中的类型判断
 
 ## ROADMAP
 #### Package
@@ -23,4 +24,4 @@ I record that hope can help me when i need to implement them.
 - [ ] 登学
 - [ ] 浏览器缓存
 - [ ] JS中的继承
-- [ ] JS类型判断
+- [ ] 原型链
