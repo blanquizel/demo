@@ -6,14 +6,15 @@ I record that hope can help me when i need to implement them.
 
 ## LIST
 #### Package
-- [x] sse
-- [x] cookie
-- [x] jwt
-- [x] sso
+- [x] sse：服务端推送技术（Server-sent Events）实现
+- [x] cookie：使用Cookie的登陆验证
+- [x] jwt：使用JWT的登陆验证
+- [x] sso：单点登录认证（SingleSignOn）实现
 
 #### document
 - [x] new运算符
 - [x] JS中的类型判断
+- [x] 原型链和继承【原型，构造函数，实例，原型链，实现继承】
 
 ## ROADMAP
 #### Package
@@ -21,7 +22,7 @@ I record that hope can help me when i need to implement them.
 - [ ] tiny url
 
 #### document
-- [ ] 登学
+- [ ] 登学【Cookie，JWT，SSO，Oauth2】
 - [ ] 浏览器缓存
-- [ ] JS中的继承
-- [ ] 原型链
+- [ ] 原型、原型对象和原型链【原型模式，原型对象，函数上下文，原型链】
+- [ ] 闭包【作用域链，闭包，内存管理】
