@@ -24,5 +24,4 @@ I record that hope can help me when i need to implement them.
 #### document
 - [ ] 登学【Cookie，JWT，SSO，Oauth2】
 - [ ] 浏览器缓存
-- [ ] 原型、原型对象和原型链【原型模式，原型对象，函数上下文，原型链】
 - [ ] 闭包【作用域链，闭包，内存管理】
