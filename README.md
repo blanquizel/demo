@@ -11,7 +11,7 @@ I record that hope can help me when i need to implement them.
 - [x] jwt：使用JWT的登陆验证
 - [x] sso：单点登录认证（SingleSignOn）实现
 
-#### document
+#### Document
 - [x] new运算符
 - [x] JS中的类型判断
 - [x] 原型链和继承【原型，构造函数，实例，原型链，实现继承】
@@ -21,7 +21,7 @@ I record that hope can help me when i need to implement them.
 - [ ] refresh token
 - [ ] tiny url
 
-#### document
+#### Document
 - [ ] 登学【Cookie，JWT，SSO，Oauth2】
 - [ ] 浏览器缓存
 - [ ] 闭包【作用域链，闭包，内存管理】
