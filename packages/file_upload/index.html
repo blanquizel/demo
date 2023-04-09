@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link ref="shortcut icon" ref="#">
+    <script crossorigin src="https://cdn.bootcdn.net/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react@latest/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@latest/umd/react-dom.development.js"></script>
+    <script crossorigin src="https://cdn.bootcdn.net/ajax/libs/antd/4.16.11/antd.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        function calcMd5(file){
+            const str = `{file.name}.{file.size}.{lastModified}`;
+            const spark = new CryptoJS.SHA256(str);
+            const md5 = spark.toString(CryptoJS.enc.Hex);
+            return md5;
+        }
+
+        const App = () => {
+            const inputRef = React.useRef(null);
+            const [file, setFile] = React.useState(null);
+            const [isUpload, setIsUpload] = React.useState(false);
+            const fileMd5 = React.useRef(null);
+
+            function onFileInputChange(e) {
+                console.log(e.target.files);
+                if (e.target.files.length > 0) {
+                    const newMd5 = calcMd5(e.target.files[0]);
+                    console.log(newMd5);
+                    if( fileMd5.current === newMd5){
+                        return
+                    }
+                    fileMd5.current = newMd5;
+                    setFile(e.target.files[0]);
+                    // setFileMd5(md5);
+                }
+            };
+
+
+            function handleUpload() {
+                inputRef.current.click();
+            };
+            function handlePauseResume() {
+                setIsUpload(!isUpload);
+            }
+
+            function submit() {
+                axios({
+                    url: '/upload',
+                    headers: {
+                        'Content-Type': 'application/octet-stream',
+                        'X-File-Name': encodeURIComponent(file.name),
+                        'Content-Range': `bytes 0-${file.size - 1}/${file.size}`
+                    },
+                    method: 'post',
+                    onUploadProgress: (e) => {
+                        const progress = Math.floor((uploaded + e.loaded) / file.size * 100);
+                    }
+                })
+            }
+
+            return (
+                <div>
+                    <button onClick={handleUpload}>upload</button>
+                    <input
+                        hidden
+                        ref={inputRef}
+                        type="file"
+                        onChange={onFileInputChange}
+                    />
+                    {file && (
+                        <div className="file-info">
+                            <div>文件名：{file.name}</div>
+                            <div>文件大小：{file.size}</div>
+                            <div>文件MD5：{fileMd5.current}</div>
+                        </div>
+                    )}
+                    {file && (
+                        <button onClick={handlePauseResume}>{isUpload ? '暂停' : '继续'}</button>
+                    )}
+                </div>)
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>
